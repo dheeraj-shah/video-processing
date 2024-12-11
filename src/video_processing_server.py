@@ -3,7 +3,7 @@ import os
 import subprocess
 from typing import Any, Sequence
 from mcp.server import Server
-from mcp.types import TextContent, Tool, CallToolResult, EmptyResult
+from mcp.types import TextContent, Tool, CallToolResult, EmptyResult, LoggingLevel
 
 class VideoProcessingServer(Server):
     def __init__(self):
@@ -52,10 +52,16 @@ class VideoProcessingServer(Server):
             return EmptyResult()
 
     async def process_video(self, video_path: str):
-        # Implement your video processing logic here
-        print(f"Processing video: {video_path}")
-        # Use subprocess or other libraries to process the video
-        await subprocess.run(["echo", f"Processed video: {video_path}"])
+        try:
+            # Implement your video processing logic here
+            print(f"Processing video: {video_path}")
+            # Use subprocess or other libraries to process the video
+            await subprocess.run(["echo", f"Processed video: {video_path}"])
+        except Exception as e:
+            self.request_context.session.send_log_message(
+                LoggingLevel.ERROR, f"Error processing video: {video_path}\n{str(e)}"
+            )
+            raise e
 
 if __name__ == "__main__":
     server = VideoProcessingServer()
