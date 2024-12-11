@@ -7,7 +7,6 @@ import {
   McpError,
   ErrorCode,
 } from "@modelcontextprotocol/sdk/types.js";
-import { spawn } from "child_process";
 
 class VideoProcessingServer extends Server {
   constructor() {
@@ -73,31 +72,12 @@ class VideoProcessingServer extends Server {
         }
 
         for (const video of request.params.arguments.videos) {
-          await this.processVideo(video);
+          console.log(`Processing video: ${video}`);
         }
 
         return { isError: false };
       }
     );
-  }
-
-  private async processVideo(videoPath: string): Promise<void> {
-    try {
-      console.log(`Processing video: ${videoPath}`);
-      await new Promise((resolve, reject) => {
-        const childProcess = spawn("echo", [`Processed video: ${videoPath}`]);
-        childProcess.on("exit", (code) => {
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`Failed to process video: ${videoPath}`));
-          }
-        });
-      });
-    } catch (error) {
-      console.error(`Error processing video: ${videoPath}`, error);
-      throw error;
-    }
   }
 }
 
